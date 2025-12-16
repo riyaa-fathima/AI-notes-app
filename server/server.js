@@ -4,7 +4,8 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 require("dotenv").config();
 const userRoutes = require("./routes/authRoutes");
-const noteRoutes = require("./routes/noteRoutes");
+const noteRoutes = require("./routes/noteRoutes")
+const aiRoutes= require("./routes/aiRoutes")
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRoutes);
 app.use("/notes", noteRoutes);
+app.use("/ai",aiRoutes );
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`server is running in ${PORT}`));
