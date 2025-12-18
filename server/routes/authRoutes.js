@@ -4,5 +4,4 @@ const { registerUser, loginUser, getMe } = require("../controller/authController
 const router = express.Router();
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.get("/me",getMe)
 module.exports = router;
