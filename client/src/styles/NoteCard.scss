@@ -1,0 +1,34 @@
+.note-card {
+  height: 100%;
+  border-radius: 14px;
+  border: none;
+  background:#f4f4fb;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  }
+
+  .note-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .note-content {
+    font-size: 14px;
+    color: #555;
+    white-space: pre-wrap;
+  }
+
+  .note-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  .btn{
+    color: black;
+  }
+}
