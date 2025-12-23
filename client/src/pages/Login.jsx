@@ -1,10 +1,19 @@
-import React from "react";
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "../styles/Login.scss";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const { login } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,100 +22,167 @@ export default function Login() {
   });
 
   const handleChange = (e) => {
-    console.log(formData);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const handleSubmit = (e) => {
 
-    
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (!formData.email || !formData.password) {
       setError("Email and password are required");
       return;
     }
 
-    setError("");
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        const res = await axios.post(`${baseUrl}/user/login`, {
+          email: formData.email,
+          password: formData.password,
+        });
+
+        const userData = {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+        };
+
+        login(res.data.token, userData); // ✅ ONLY THIS
+
+        setSuccess(`Welcome back, ${res.data.name}`);
+
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } else {
+        const res = await axios.post(`${baseUrl}/user/register`, {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+
+        const userData = {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+        };
+
+        login(res.data.token, userData); // ✅ SAME FLOW
+
+        setSuccess("Account created successfully");
+
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      }
+    } catch (err) {
+      console.log("full err", err);
+      console.log("err respon", err.response);
+      console.log("message", err.message);
+
+      setError(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
-
-
   return (
-    <>
-      <div className="login-page d-flex justify-content-center align-items-center">
-        <div className="login-card">
-          <h2 className=" login-head text-center mb-4">
-            {isLogin ? "LOGIN" : "SIGN UP"}
-          </h2>
+    <div className="login-page d-flex justify-content-center align-items-center">
+      <div className="login-card">
+        <h2 className="login-head text-center mb-4">
+          {isLogin ? "LOGIN" : "SIGN UP"}
+        </h2>
 
-          {error && <div className="alert alert-danger py-2">{error}</div>}
-          <form onSubmit={handleSubmit}>
-            {!isLogin && (
-              <div className="form-group mb-4">
-                <input
-                  type="name"
-                  className="form-control custom-input"
-                  name="name"
-                  onChange={handleChange}
-                  required
-                />
-                <label>Name</label>
-              </div>
-            )}
+        {error && <div className="alert alert-danger py-2">{error}</div>}
+        {success && <div className="alert alert-success py-2">{success}</div>}
+
+        <form onSubmit={handleSubmit}>
+          {!isLogin && (
             <div className="form-group mb-4">
               <input
-                type="email"
+                type="text"
                 className="form-control custom-input"
                 name="name"
+                value={formData.name}
                 onChange={handleChange}
                 required
               />
-              <label>Email</label>
+              <label>Name</label>
             </div>
+          )}
 
+          <div className="form-group mb-4">
+            <input
+              type="email"
+              className="form-control custom-input"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <label>Email</label>
+          </div>
+
+          <div className="form-group mb-4">
+            <input
+              type="password"
+              className="form-control custom-input"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <label>Password</label>
+          </div>
+
+          {!isLogin && (
             <div className="form-group mb-4">
               <input
                 type="password"
                 className="form-control custom-input"
-                name="name"
+                name="confirmPassword"
+                value={formData.confirmPassword}
                 onChange={handleChange}
                 required
               />
-              <label>Password</label>
+              <label>Confirm Password</label>
             </div>
-            {!isLogin && (
-              <div className="form-group mb-4">
-                <input
-                  type="password"
-                  className="form-control custom-input"
-                  name="password"
-                  onChange={handleChange}
-                  required
-                />
-                <label> Confirm Password</label>
-              </div>
-            )}
-            <button type="submit" className="btn  w-100">
-              {isLogin ? "Login" : "Sign up"}
-            </button>
+          )}
 
-            <div className="login-links mt-3">
-              <span>
-                {isLogin
-                  ? "Don't have an account?"
-                  : "Already have an account?"}
-              </span>
-              <button
-                type="button"
-                className="auth-switch"
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin ? "Create an account" : "Login"}
-              </button>
-            </div>
-          </form>
-        </div>
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={loading}
+          >
+            {loading ? "Please wait..." : isLogin ? "Login" : "Sign up"}
+          </button>
+
+          <div className="login-links mt-3">
+            <span>
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
+            </span>
+            <button
+              type="button"
+              className="auth-switch"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+                setSuccess("");
+              }}
+            >
+              {isLogin ? "Create an account" : "Login"}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 }

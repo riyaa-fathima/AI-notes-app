@@ -1,0 +1,38 @@
+.app-navbar {
+  background-color: #1c1c24;
+  padding: 0.6rem 1rem;
+
+  .navbar-brand {
+    color: #00ffe5;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-link {
+    color: #ccc;
+    margin-right: 0.5rem;
+
+    &:hover {
+      color: #00ffe5;
+    }
+  }
+
+  .nav-link.active {
+    color: #00ffe5;
+    font-weight: 500;
+    border-bottom: 2px solid #00ffe5;
+  }
+
+  .user-name {
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .btn-outline-danger {
+    --bs-btn-color: #ff5c5c;
+    --bs-btn-border-color: #ff5c5c;
+    --bs-btn-hover-bg: #ff5c5c;
+    --bs-btn-hover-border-color: #ff5c5c;
+    --bs-btn-hover-color: #fff;
+  }
+}
