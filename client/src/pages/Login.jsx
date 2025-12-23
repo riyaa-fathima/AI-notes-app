@@ -2,10 +2,12 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.scss";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_API_URL;
+  const { login } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -46,10 +48,14 @@ export default function Login() {
           email: formData.email,
           password: formData.password,
         });
-        console.log("LOGIN RESPONSE:", res.data);
 
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data));
+        const userData = {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+        };
+
+        login(res.data.token, userData); // ✅ ONLY THIS
 
         setSuccess(`Welcome back, ${res.data.name}`);
 
@@ -63,8 +69,13 @@ export default function Login() {
           password: formData.password,
         });
 
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        const userData = {
+          _id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+        };
+
+        login(res.data.token, userData); // ✅ SAME FLOW
 
         setSuccess("Account created successfully");
 
