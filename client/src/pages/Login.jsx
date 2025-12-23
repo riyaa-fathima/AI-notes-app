@@ -28,7 +28,6 @@ export default function Login() {
     setError("");
     setSuccess("");
 
-    // 🔒 Frontend validation FIRST
     if (!formData.email || !formData.password) {
       setError("Email and password are required");
       return;
@@ -43,22 +42,21 @@ export default function Login() {
 
     try {
       if (isLogin) {
-        // LOGIN
         const res = await axios.post(`${baseUrl}/user/login`, {
           email: formData.email,
           password: formData.password,
         });
+        console.log("LOGIN RESPONSE:", res.data);
 
         localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("user", JSON.stringify(res.data));
 
-        setSuccess(`Welcome back, ${res.data.user.name}`);
+        setSuccess(`Welcome back, ${res.data.name}`);
 
         setTimeout(() => {
           navigate("/");
         }, 1000);
       } else {
-        // SIGN UP
         const res = await axios.post(`${baseUrl}/user/register`, {
           name: formData.name,
           email: formData.email,
@@ -75,6 +73,10 @@ export default function Login() {
         }, 1000);
       }
     } catch (err) {
+      console.log("full err", err);
+      console.log("err respon", err.response);
+      console.log("message", err.message);
+
       setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -154,9 +156,7 @@ export default function Login() {
 
           <div className="login-links mt-3">
             <span>
-              {isLogin
-                ? "Don't have an account?"
-                : "Already have an account?"}
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
             </span>
             <button
               type="button"

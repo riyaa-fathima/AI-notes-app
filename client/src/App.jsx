@@ -1,10 +1,16 @@
-import React from 'react'
-import Login from './pages/Login'
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
+
 
 function App() {
   return (
-   <><Login/></>
-  )
+    <>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </>
+  );
 }
 
-export default App
+export default App;
