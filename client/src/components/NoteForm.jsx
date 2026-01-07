@@ -36,7 +36,7 @@ export default function NoteForm({ setNotes }) {
         onChange={(e) => setContent(e.target.value)}
       />
 
-      <button className="btn add-note-btn">Add Note</button>
+      <button className="btn add-note-btn btn-dark">Add Note</button>
     </form>
   );
 }
