@@ -1,31 +1,39 @@
-const OpenAI = require("openai");
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// const OpenAI = require("openai");
+// const client = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// });
 
-async function runAI(prompt) {
-  const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-  });
+// async function runAI(prompt) {
+//   const response = await client.chat.completions.create({
+//     model: "gpt-4o-mini",
+//     messages: [{ role: "user", content: prompt }],
+//   });
 
-  return response.choices[0].message.content;
-}
+//   return response.choices[0].message.content;
+// }
 
-exports.summarizeNote = async (req, res) => {
+exports.summarizeText = async (req, res) => {
   try {
-    const { content } = req.body;
-    if (!content?.trim()) {
-      return res.status(400).json({ message: "Content is required" });
+    const { text } = req.body;
+
+    if (!text || text.trim().length < 20) {
+      return res.status(400).json({
+        message: "Text too short to summarize",
+      });
     }
 
-    const output = await runAI(
-      `Summarize clearly in 2–3 sentences:\n\n${content}`
-    );
+    // 🔁 Replace this later with real AI call
+    const summary = text
+      .split(".")
+      .slice(0, 2)
+      .join(".") + ".";
 
-    res.json({ result: output.trim() });
+    return res.json({ summary });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "AI summarizing failed" });
+    console.error("summarizeText:", err.message);
+    return res.status(500).json({
+      message: "Failed to summarize text",
+    });
   }
 };
+

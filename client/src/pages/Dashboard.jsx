@@ -28,6 +28,8 @@ export default function Dashboard() {
         <Link to="/notes" className="btn btnnote btn-dark">
           + New Note
         </Link>
+        <Link to="/summarize" className="btn btn-dark">Summarize</Link>
+
       </div>
 
       {/* PINNED */}
